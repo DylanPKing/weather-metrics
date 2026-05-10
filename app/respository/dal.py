@@ -1,8 +1,8 @@
 import os
-from sqlmodel import create_engine, Session
+from collections.abc import Generator
 
 from dotenv import load_dotenv
-from collections.abc import Generator
+from sqlmodel import Session, create_engine
 
 load_dotenv()
 

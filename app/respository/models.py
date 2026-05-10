@@ -1,11 +1,11 @@
-from decimal import Decimal
 from datetime import datetime, timezone
+from decimal import Decimal
 
-from pydantic import BaseModel, AwareDatetime
+from pydantic import AwareDatetime, BaseModel
 from sqlalchemy import Column, DateTime
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
-from app.respository.constants import Metric
+from app.respository.constants import Statistic
 
 
 class WeatherSensor(SQLModel, table=True):
@@ -41,8 +41,8 @@ class WeatherReadingCreate(BaseModel):
 
 
 class SensorReadingResponse(BaseModel):
-    sensors: list[int]
-    metric: Metric
+    sensors: list[int] | str
+    statistic: Statistic
     temperature: Decimal | None = None
     wind_speed: Decimal | None = None
     humidity: int | None = None
