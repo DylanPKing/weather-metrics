@@ -1,6 +1,11 @@
 from decimal import Decimal
+from datetime import datetime, timezone
 
+from pydantic import BaseModel, AwareDatetime
+from sqlalchemy import Column, DateTime
 from sqlmodel import SQLModel, Field
+
+from app.respository.constants import Metric
 
 
 class WeatherSensor(SQLModel, table=True):
@@ -21,3 +26,23 @@ class WeatherReading(SQLModel, table=True):
         decimal_places=2,
     )
     humidity: int | None = Field(default=None)
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+
+
+class WeatherReadingCreate(BaseModel):
+    sensor: int
+    temperature: Decimal | None = None
+    wind_speed: Decimal | None = None
+    humidity: int | None = None
+    timestamp: AwareDatetime | None = None
+
+
+class SensorReadingResponse(BaseModel):
+    sensors: list[int]
+    metric: Metric
+    temperature: Decimal | None = None
+    wind_speed: Decimal | None = None
+    humidity: int | None = None
