@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import AwareDatetime
@@ -21,7 +21,8 @@ async def add_sensor_data(
     reading: WeatherReadingCreate,
     session: Session = Depends(get_session),
 ) -> WeatherReading:
-    db_reading = WeatherReading.model_validate(reading)
+    data = reading.model_dump(exclude_none=True)
+    db_reading = WeatherReading(**data)
     session.add(db_reading)
     session.commit()
     session.refresh(db_reading)
@@ -70,10 +71,10 @@ async def get_sensor_data(
     if start_date:
         statement = statement.where(WeatherReading.timestamp > start_date)
     else:
-        # If no start date, then definitely no end date,look at last day.
+        # If no start date, then definitely no end date, look at last day.
         statement = statement.where(
             WeatherReading.timestamp
-            > AwareDatetime.utcnow() - timedelta(days=1)
+            > datetime.now(timezone.utc) - timedelta(days=1)
         )
 
     if end_date:
