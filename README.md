@@ -3,6 +3,10 @@ A simple FastAPI project to take in basic weather data and calcuate statistics f
 
 ## Running
 1. Clone the repo
+2. Create the `.env` file:
+```bash
+cat example.env > .env
+```
 2. Run using docker:
 ```bash
 docker compose up -d --build
