@@ -11,9 +11,21 @@ from app.respository.models import (
     SensorReadingResponse,
     WeatherReading,
     WeatherReadingCreate,
+    WeatherSensor,
 )
 
 router = APIRouter(prefix="/v1")
+
+
+@router.post("/sensors")
+async def create_sensor(
+    session: Session = Depends(get_session),
+) -> WeatherSensor:
+    sensor = WeatherSensor()
+    session.add(sensor)
+    session.commit()
+    session.refresh(sensor)
+    return sensor
 
 
 @router.post("")
