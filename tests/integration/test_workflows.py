@@ -1,13 +1,20 @@
 """Integration tests for end-to-end workflows."""
 
 from datetime import datetime, timedelta, timezone
+from typing import Callable
+
+from fastapi.testclient import TestClient
+
+from app.respository.models import WeatherSensor
 
 
 class TestEndToEndWorkflows:
     """End-to-end workflow tests covering multiple operations."""
 
-    def test_create_and_retrieve_single_reading(self, client, test_sensor):
-        """Test creating a reading and retrieving it."""
+    def test_create_and_retrieve_single_reading(
+        self, client: TestClient, test_sensor: WeatherSensor
+    ):
+        """Test creating a reading and retrievi§ng it."""
         # Create a reading
         post_response = client.post(
             "/v1",
@@ -34,7 +41,7 @@ class TestEndToEndWorkflows:
         assert float(data["temperature"]) == 23.5
 
     def test_create_multiple_readings_and_query_with_filters(
-        self, client, test_sensors
+        self, client: TestClient, test_sensors: list[WeatherSensor]
     ):
         """Test creating multiple readings and querying with various filters."""
         # Create readings from multiple sensors
@@ -74,7 +81,7 @@ class TestEndToEndWorkflows:
         assert data["humidity"] is not None
 
     def test_comprehensive_workflow_3_sensors_5_readings_each(
-        self, client, test_sensors
+        self, client: TestClient, test_sensors: list[WeatherSensor]
     ):
         """Test full workflow: create 3 sensors × 5 readings each, query combinations."""
         # Create 5 readings per sensor
@@ -153,7 +160,10 @@ class TestEndToEndWorkflows:
         assert float(data["temperature"]) == 240.0
 
     def test_workflow_with_date_filtering(
-        self, client, create_reading, test_sensor
+        self,
+        client: TestClient,
+        create_reading: Callable,
+        test_sensor: WeatherSensor,
     ):
         """Test workflow with creation and retrieval using date filtering."""
         now = datetime.now(timezone.utc)

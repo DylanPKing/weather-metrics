@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Any, Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel
 
@@ -26,14 +27,14 @@ def test_engine():
 
 
 @pytest.fixture(scope="function")
-def test_session(test_engine):
+def test_session(test_engine: Engine) -> Generator[Session, None, None]:
     """Provide a test database session."""
     with Session(test_engine) as session:
         yield session
 
 
 @pytest.fixture(scope="function")
-def client(test_session):
+def client(test_session: Session) -> Generator[TestClient, None, None]:
     """Provide a FastAPI test client with test database."""
 
     def override_get_session():
@@ -68,7 +69,7 @@ def test_sensors(test_session) -> list[WeatherSensor]:
 
 
 @pytest.fixture(scope="function")
-def sample_reading_data():
+def sample_reading_data() -> dict[str, Any]:
     """Provide sample data for creating readings."""
     return {
         "sensor": 1,
@@ -79,13 +80,13 @@ def sample_reading_data():
 
 
 @pytest.fixture(scope="function")
-def sample_reading_minimal():
+def sample_reading_minimal() -> dict[str, int]:
     """Provide minimal required data for creating readings."""
     return {"sensor": 1}
 
 
 @pytest.fixture(scope="function")
-def create_reading(test_session):
+def create_reading(test_session: Session):
     """Factory fixture to create readings."""
 
     def _create_reading(
